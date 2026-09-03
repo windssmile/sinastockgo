@@ -1,0 +1,13 @@
+.DS_Store
+.remember/
+
+# Local build outputs
+/sinago
+*.exe
+*.dmg
+*.dmg.zip
+*.app/
+
+# macOS packaging helpers are not part of the portable core source package.
+/build-app.sh
+/make-icon.py
