@@ -1,4 +1,4 @@
-name: Build Windows
+name: Build packages
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  windows:
     runs-on: windows-latest
     env:
       CGO_ENABLED: 0
@@ -33,4 +33,34 @@ jobs:
         with:
           name: sinago-windows-amd64
           path: sinago-windows-amd64.exe
+          if-no-files-found: error
+
+  macos:
+    runs-on: macos-15
+    env:
+      CGO_ENABLED: 0
+      VERSION: "1.5"
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+
+      - name: Test
+        run: go test ./...
+
+      - name: Build DMG
+        run: ./build-app.sh
+
+      - name: Verify DMG
+        run: hdiutil verify sinago-1.5-darwin-arm64.dmg
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v7
+        with:
+          name: sinago-darwin-arm64
+          path: sinago-1.5-darwin-arm64.dmg
           if-no-files-found: error
